@@ -3,9 +3,10 @@ var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: {
-        app: './src/main/js/app.js'
-    },
+    entry: [
+        'regenerator-runtime/runtime',
+        './src/main/js/app.js'
+    ],
     devtool: 'sourcemaps',
     cache: true,
     mode: 'development',

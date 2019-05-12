@@ -1,7 +1,9 @@
 package com.tareksaidee.NewSocial.controllers;
 
+import com.tareksaidee.NewSocial.domain.DiaryComment;
 import com.tareksaidee.NewSocial.domain.DiaryEntry;
 import com.tareksaidee.NewSocial.domain.User;
+import com.tareksaidee.NewSocial.repositories.DiaryCommentRepository;
 import com.tareksaidee.NewSocial.repositories.DiaryEntryRepository;
 import com.tareksaidee.NewSocial.services.SpringDataJpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class HomeController {
 
     @Autowired
     DiaryEntryRepository diaryEntryRepository;
+
+    @Autowired
+    DiaryCommentRepository diaryCommentRepository;
 
     @RequestMapping(value = {"/", "/user-*", "home"})
     public String index() {
@@ -50,6 +55,12 @@ public class HomeController {
     @ResponseBody
     public List<DiaryEntry> getAllDiaryEntries(Principal principal) {
         return diaryEntryRepository.getAllDiaryEntries(principal.getName());
+    }
+
+    @RequestMapping(value = "/getDiaryComments", method = RequestMethod.GET)
+    @ResponseBody
+    public List<DiaryComment> getDiaryComments(@RequestParam String entryID) {
+        return diaryCommentRepository.getDiaryComments(Integer.parseInt(entryID));
     }
 
 }
