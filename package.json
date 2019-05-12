@@ -1,0 +1,44 @@
+{
+  "name": "new-social",
+  "version": "0.1.0",
+  "description": "Demo of ReactJS + Spring Data REST",
+  "keywords": [
+    "rest",
+    "hateoas",
+    "spring",
+    "data",
+    "react"
+  ],
+  "author": "Tarek Saidee",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "axios": "^0.15.3",
+    "@material-ui/core": "^3.9.3",
+    "@material-ui/system": "^3.0.0-alpha.2",
+    "@material-ui/styles": "^3.0.0-alpha.10",
+    "react-tap-event-plugin": "^3.0.2",
+    "rest": "^1.3.1",
+    "react-datepicker": "^2.5.0",
+    "@material-ui/icons": "^3.0.2",
+    "prop-types": "^15.7.2",
+    "classnames": "^2.2.6"
+  },
+  "scripts": {
+    "watch": "webpack --watch -d"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "babel-loader": "^8.0.5",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "html-webpack-plugin": "^3.2.0",
+    "transfer-webpack-plugin": "^0.1.4",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2",
+    "style-loader": "^0.23.1",
+    "css-loader": "^2.1.1"
+  }
+}
