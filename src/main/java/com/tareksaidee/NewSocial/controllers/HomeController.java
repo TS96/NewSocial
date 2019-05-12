@@ -1,6 +1,8 @@
 package com.tareksaidee.NewSocial.controllers;
 
+import com.tareksaidee.NewSocial.domain.DiaryEntry;
 import com.tareksaidee.NewSocial.domain.User;
+import com.tareksaidee.NewSocial.repositories.DiaryEntryRepository;
 import com.tareksaidee.NewSocial.services.SpringDataJpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 
 @Controller
@@ -15,6 +18,9 @@ public class HomeController {
 
     @Autowired
     SpringDataJpaUserDetailsService springDataJpaUserDetailsService;
+
+    @Autowired
+    DiaryEntryRepository diaryEntryRepository;
 
     @RequestMapping(value = {"/", "/user-*", "home"})
     public String index() {
@@ -38,6 +44,12 @@ public class HomeController {
     @ResponseBody
     public String currentUserName(Principal principal) {
         return principal.getName();
+    }
+
+    @RequestMapping(value = "/getAllDiaryEntries", method = RequestMethod.GET)
+    @ResponseBody
+    public List<DiaryEntry> getAllDiaryEntries(Principal principal) {
+        return diaryEntryRepository.getAllDiaryEntries(principal.getName());
     }
 
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import RaisedButton from '@material-ui/core/Button';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
@@ -73,13 +73,13 @@ class Register extends Component {
                             onChange={(date) => startDate = date}
                         />
                         <br/>
-                        <button style={style}>Submit</button>
+                        <Button variant="contained" color="primary" style={style}>Submit</Button>
                     </form>
                 </div>
                 <div>Already registered? Login!
                     <div>
-                        <RaisedButton label="Login" primary={true} style={style}
-                                      onClick={(event) => this.handleLoginClick(event)}/>
+                        <Button variant="contained" color="primary" style={style}
+                                onClick={(event) => this.handleLoginClick(event)}>Login</Button>
                     </div>
                 </div>
             </MuiThemeProvider>

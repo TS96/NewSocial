@@ -52,13 +52,13 @@ class Profile extends Component {
                     city: res.data["city"],
                     country: res.data["country"]
                 });
-                profileScreen.push(this.FontWeight());
+                profileScreen.push(this.getProfile());
                 this.setState({profileScreen:profileScreen});
                 this.render();
             });
     }
 
-    FontWeight() {
+    getProfile() {
         // axios.get(apiBaseUrl + 'username')
         //     .then(res => {
         //         username = res.data;
