@@ -7,16 +7,21 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import TextField from '@material-ui/core/TextField';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import axios from "axios";
+import Button from '@material-ui/core/Button';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const apiBaseUrl = "http://localhost:8080/";
 
@@ -26,6 +31,10 @@ const styles = theme => ({
         center: true,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    textField: {
+        marginLeft: theme.spacing.unit,
+        marginRight: theme.spacing.unit,
     },
     media: {
         height: 0,
@@ -47,21 +56,40 @@ const styles = theme => ({
     avatar: {
         backgroundColor: red[500],
     },
+    input: {
+        display: 'none',
+    },
+    button: {
+        margin: theme.spacing.unit,
+    },
+    formControl: {
+        margin: theme.spacing.unit,
+        minWidth: 120,
+    },
+    selectEmpty: {
+        marginTop: theme.spacing.unit * 2,
+    }
 });
 
 
 class DiaryEntry extends React.Component {
-    state = {expanded: false};
 
     constructor(props) {
         super(props);
         var diariesScreen = [];
         var commentsScreen = [];
+        var newEntryScreen = [];
         this.state = {
             diariesScreen: diariesScreen,
-            commentsScreen: commentsScreen
+            commentsScreen: commentsScreen,
+            user_name: "",
+            newEntryScreen: newEntryScreen
         };
-        this.getEntries()
+        this.getEntries();
+    }
+
+    componentDidMount() {
+        this.setNewEntryScreen();
     }
 
     getEntries() {
@@ -74,6 +102,7 @@ class DiaryEntry extends React.Component {
         var visibility = "";
         var loc_id = "";
         var entryId = "";
+        this.getName();
         axios.get(apiBaseUrl + 'getAllDiaryEntries')
             .then(async (res) => {
                 for (var i = 0; i < res.data.length; i++) {
@@ -128,9 +157,60 @@ class DiaryEntry extends React.Component {
                                 </IconButton>
                             </CardActions>
                             {this.state.commentsScreen}
+                            <TextField
+                                // id="outlined-name"
+                                label="New Comment"
+                                className={classes.textField}
+                                value={this.state[entryId]}
+                                onChange={this.handleChange(entryId)}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <Button variant="contained" color="primary"
+                                    onClick={this.commentClick(entryId)}>Add</Button>
                         </Card><br/></div>])
                     });
                 }
+            });
+    }
+
+    handleChange = name => event => {
+        console.log(name);
+        this.setState({
+            [name]: event.target.value,
+        });
+        console.log(this.state[name]);
+    };
+
+    commentClick = (entry_id) => (e) => {
+        var body = this.state[entry_id];
+        console.log(body);
+        axios.post(apiBaseUrl + 'newDiaryComment', {
+            entry_id: entry_id,
+            user_name: this.state.user_name,
+            time_stamp: Date.now(),
+            body: body
+        })
+            .then(function (response) {
+                console.log(response);
+                if (response.status === 200 || response.status === 202) {
+                    console.log(response.status);
+                } else {
+                    alert("An error occurred");
+                    console.log("some error ocurred", response.status);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    getName() {
+        axios.get(apiBaseUrl + 'username')
+            .then(res => {
+                this.setState({
+                    user_name: res.data
+                });
             });
     }
 
@@ -155,14 +235,98 @@ class DiaryEntry extends React.Component {
         console.log("done");
     };
 
-    handleExpandClick = () => {
-        this.setState(state => ({expanded: !state.expanded}));
+    newPostClick = (e) => {
+        axios.post(apiBaseUrl + 'newDiaryEntry', {
+            user_name: this.state.user_name,
+            title: this.state.newTitle,
+            time_stamp: Date.now(),
+            body: this.state.newBody,
+            visibility: this.state.visibility
+        })
+            .then(function (response) {
+                console.log(response);
+                if (response.status === 200 || response.status === 202) {
+                    console.log(response.status);
+                } else {
+                    alert("An error occurred");
+                    console.log("some error ocurred", response.status);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     };
+
+    setNewEntryScreen() {
+        const {classes} = this.props;
+        this.setState({
+            newEntryScreen:
+                this.state.newEntryScreen.concat([<div>
+                    <TextField
+                        // id="outlined-name"
+                        label="Title"
+                        className={classes.textField}
+                        value={this.state.newTitle}
+                        onChange={this.handleChange("newTitle")}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <br/>
+                    <TextField
+                        // id="outlined-name"
+                        label="Body"
+                        className={classes.textField}
+                        value={this.state.newBody}
+                        onChange={this.handleChange("newBody")}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <br/>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink htmlFor="age-label-placeholder">
+                            Visibility
+                        </InputLabel>
+                        <Select
+                            value={this.state.visibility}
+                            onChange={this.handleChange("visibility")}
+                            input={<Input name="age" id="age-label-placeholder"/>}
+                            name="visibility"
+                            className={classes.selectEmpty}
+                        >
+                            <MenuItem value="friends">Friends</MenuItem>
+                            <MenuItem value="fof">Friends of Friends</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <br/>
+                    <input
+                        accept="image/*"
+                        className={classes.input}
+                        id="contained-button-file"
+                        type="file"
+                    />
+                    <label htmlFor="contained-button-file">
+                        <Button variant="contained" component="span" className={classes.button}>
+                            Upload
+                        </Button>
+                    </label>
+                    <Button variant="contained" color="primary"
+                            onClick={() => {
+                                this.newPostClick()
+                            }}>Create</Button>
+                </div>])
+        });
+    }
+
 
     render() {
         return (
             <div>
-                {this.state.diariesScreen}
+                <div>
+                    {this.state.newEntryScreen}
+                </div>
+                <div>
+                    {this.state.diariesScreen}
+                </div>
             </div>
         );
     }

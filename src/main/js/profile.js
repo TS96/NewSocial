@@ -59,10 +59,6 @@ class Profile extends Component {
     }
 
     getProfile() {
-        // axios.get(apiBaseUrl + 'username')
-        //     .then(res => {
-        //         username = res.data;
-        //     });
         return (
             <div>
                 <Avatar>H</Avatar>

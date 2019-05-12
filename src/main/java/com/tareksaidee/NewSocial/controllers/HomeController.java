@@ -63,4 +63,17 @@ public class HomeController {
         return diaryCommentRepository.getDiaryComments(Integer.parseInt(entryID));
     }
 
+    @PostMapping(value = "/newDiaryComment")
+    public ResponseEntity newDiaryComment(@RequestBody DiaryComment diaryComment) {
+        diaryCommentRepository.save(diaryComment);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping(value = "/newDiaryEntry")
+    public ResponseEntity newDiaryEntry(@RequestBody DiaryEntry diaryEntry) {
+        System.out.println(diaryEntry);
+        diaryEntryRepository.save(diaryEntry);
+        return ResponseEntity.accepted().build();
+    }
+
 }
