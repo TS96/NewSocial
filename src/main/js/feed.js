@@ -22,6 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import * as blobUtil from 'blob-util'
 
 const apiBaseUrl = "http://localhost:8080/";
 
@@ -119,9 +120,8 @@ class DiaryEntry extends React.Component {
                     visibility = res.data[i]["visibility"];
                     loc_id = res.data[i]["loc_id"];
                     entryId = res.data[i]["entryId"];
-                    console.log("about to enter");
                     await this.getComments(entryId);
-                    console.log("left");
+                    await this.getLikes(entryId);
                     this.setState({
                         diariesScreen: this.state.diariesScreen.concat([<div><Card className={classes.card}>
                             <CardHeader
@@ -151,6 +151,7 @@ class DiaryEntry extends React.Component {
                             <CardActions className={classes.actions} disableActionSpacing>
                                 <IconButton aria-label="Add to favorites">
                                     <FavoriteIcon/>
+                                    <p>{this.state.entryLikes}</p>
                                 </IconButton>
                                 <IconButton aria-label="Share">
                                     <ShareIcon/>
@@ -232,17 +233,47 @@ class DiaryEntry extends React.Component {
                 commentsScreen: comments
             });
         });
+    };
+
+    async getLikes(diaryID) {
+        await axios.get(apiBaseUrl + 'getDiaryLikes?entryID=' + diaryID).then(res => {
+            if (res.data)
+                this.setState({
+                    entryLikes: res.data
+                });
+            else
+                this.setState({
+                    entryLikes: 0
+                });
+        });
         console.log("done");
     };
 
     newPostClick = (e) => {
-        axios.post(apiBaseUrl + 'newDiaryEntry', {
-            user_name: this.state.user_name,
-            title: this.state.newTitle,
-            time_stamp: Date.now(),
-            body: this.state.newBody,
-            visibility: this.state.visibility
-        })
+        console.log(this.state.selectedFile);
+        let config = {
+            header: {
+                'Content-Type': 'multipart/form-data'
+            }
+        };
+        var data = new FormData();
+        data.append('user_name', this.state.user_name);
+        data.append('title', this.state.newTitle);
+        data.append('time_stamp', Date.now());
+        data.append('body', this.state.newBody);
+        data.append('visibility', this.state.visibility);
+        data.append('media', this.state.selectedFile);
+        data.append('file', 'image');
+        axios.post(apiBaseUrl + 'newDiaryEntry', data, config
+        )
+        // axios.post(apiBaseUrl + 'newDiaryEntry', {
+        //     user_name: this.state.user_name,
+        //     title: this.state.newTitle,
+        //     time_stamp: Date.now(),
+        //     body: this.state.newBody,
+        //     visibility: this.state.visibility,
+        //     media: this.state.selectedFile
+        // })
             .then(function (response) {
                 console.log(response);
                 if (response.status === 200 || response.status === 202) {
@@ -303,6 +334,9 @@ class DiaryEntry extends React.Component {
                         className={classes.input}
                         id="contained-button-file"
                         type="file"
+                        onChange={(e) => {
+                            this.fileChangedHandler(e)
+                        }}
                     />
                     <label htmlFor="contained-button-file">
                         <Button variant="contained" component="span" className={classes.button}>
@@ -316,6 +350,20 @@ class DiaryEntry extends React.Component {
                 </div>])
         });
     }
+
+    fileChangedHandler = (mainEvent) => {
+        console.log("called");
+        var reader = new FileReader();
+        reader.onload = (event) => {
+            blobUtil.imgSrcToBlob(event.target.result).then((blob) => {
+                    this.setState({selectedFile: blob});
+                }
+            ).catch(function (err) {
+                console.log("Failed to load image" + err);
+            });
+        };
+        reader.readAsDataURL(mainEvent.target.files[0]);
+    };
 
 
     render() {

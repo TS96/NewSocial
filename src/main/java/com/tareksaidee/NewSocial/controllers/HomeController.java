@@ -5,6 +5,7 @@ import com.tareksaidee.NewSocial.domain.DiaryEntry;
 import com.tareksaidee.NewSocial.domain.User;
 import com.tareksaidee.NewSocial.repositories.DiaryCommentRepository;
 import com.tareksaidee.NewSocial.repositories.DiaryEntryRepository;
+import com.tareksaidee.NewSocial.repositories.DiaryLikeRepository;
 import com.tareksaidee.NewSocial.services.SpringDataJpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,9 @@ public class HomeController {
 
     @Autowired
     DiaryCommentRepository diaryCommentRepository;
+
+    @Autowired
+    DiaryLikeRepository diaryLikeRepository;
 
     @RequestMapping(value = {"/", "/user-*", "home"})
     public String index() {
@@ -63,6 +67,12 @@ public class HomeController {
         return diaryCommentRepository.getDiaryComments(Integer.parseInt(entryID));
     }
 
+    @RequestMapping(value = "/getDiaryLikes", method = RequestMethod.GET)
+    @ResponseBody
+    public Long getDiaryLikes(@RequestParam String entryID) {
+        return diaryLikeRepository.getDiaryLikes(Integer.parseInt(entryID));
+    }
+
     @PostMapping(value = "/newDiaryComment")
     public ResponseEntity newDiaryComment(@RequestBody DiaryComment diaryComment) {
         diaryCommentRepository.save(diaryComment);
@@ -70,7 +80,7 @@ public class HomeController {
     }
 
     @PostMapping(value = "/newDiaryEntry")
-    public ResponseEntity newDiaryEntry(@RequestBody DiaryEntry diaryEntry) {
+    public ResponseEntity newDiaryEntry(@ModelAttribute DiaryEntry diaryEntry) {
         System.out.println(diaryEntry);
         diaryEntryRepository.save(diaryEntry);
         return ResponseEntity.accepted().build();
