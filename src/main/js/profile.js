@@ -41,15 +41,24 @@ class Profile extends Component {
         if (this.state.currentUser !== this.state.pageUser) {
             await axios.get(apiBaseUrl + 'getFriendship?username=' + this.state.pageUser)
                 .then(res => {
+                    console.log(res);
                     if (res.data === null || res.data === "") {
-                        console.log("got it");
                         this.setState({status: "nothing"});
                         friendshipScreen.push([<Button variant="contained" color="primary"
                                                        onClick={(e) => {
                                                            this.friendRequestClick()
                                                        }}>Send Friend Request</Button>]);
-                        this.setState({friendshipScreen: friendshipScreen});
+                    } else if (res.data["request_status"] === "pending") {
+                        friendshipScreen.push([<Button variant="contained" color="primary"
+                        >Request Sent</Button>]);
+                    } else if (res.data["request_status"] === "rejected") {
+                        friendshipScreen.push([<Button variant="contained" color="primary"
+                        >Request Rejected</Button>]);
+                    } else if (res.data["request_status"] === "approved") {
+                        friendshipScreen.push([<Button variant="contained" color="primary"
+                        >FRIENDS</Button>]);
                     }
+                    this.setState({friendshipScreen: friendshipScreen});
                 });
         } else {
             this.setState({status: "false"});

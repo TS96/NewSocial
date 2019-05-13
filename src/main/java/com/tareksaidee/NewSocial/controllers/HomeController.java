@@ -93,7 +93,7 @@ public class HomeController {
     @RequestMapping(value = "/getFriendship", method = RequestMethod.GET)
     @ResponseBody
     public Friendship getFriendship(@RequestParam String username, Principal principal) {
-        return friendshipRepository.findByfriendNameAndUsername(principal.getName(), username);
+        return friendshipRepository.findByfriendNameAndUsername(username, principal.getName());
     }
 
     @PostMapping(value = "/newDiaryComment")
