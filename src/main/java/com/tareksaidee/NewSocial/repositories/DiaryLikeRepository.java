@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface DiaryLikeRepository extends JpaRepository<DiaryLike, Long> {
 
-    @Query("SELECT count(d) as likecount FROM DiaryLike d WHERE d.likeId.entryId = :entryID GROUP BY d.likeId.entryId")
+    @Query("SELECT count(d) as likecount FROM DiaryLike d WHERE d.entryId = :entryID GROUP BY d.entryId")
     Long getDiaryLikes(@Param("entryID") Integer entryID);
 
 }

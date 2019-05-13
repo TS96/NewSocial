@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
-import classnames from 'classnames';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -183,10 +182,10 @@ class DiaryEntry extends React.Component {
         console.log(this.state[name]);
     };
 
-    diaryLike = (entry_id) => (e) => {
+    diaryLike = (entryId) => (e) => {
         axios.post(apiBaseUrl + 'newDiaryLike', {
-            entry_id: entry_id,
-            user_name: this.state.user_name,
+            entryId: entryId,
+            username: this.state.user_name,
         }).then(function (response) {
             console.log(response);
             if (response.status === 200 || response.status === 202) {
@@ -264,7 +263,6 @@ class DiaryEntry extends React.Component {
                     entryLikes: 0
                 });
         });
-        console.log("done");
     };
 
     newPostClick = (e) => {
