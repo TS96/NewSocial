@@ -33,6 +33,9 @@ public class HomeController {
     @Autowired
     ActivityRepository activityRepository;
 
+    @Autowired
+    FriendshipRepository friendshipRepository;
+
     @RequestMapping(value = {"/", "/user-*", "home", "activities"})
     public String index() {
         return "index";
@@ -87,9 +90,21 @@ public class HomeController {
         return locationRepository.findBylocationID(Integer.parseInt(locationID));
     }
 
+    @RequestMapping(value = "/getFriendship", method = RequestMethod.GET)
+    @ResponseBody
+    public Friendship getFriendship(@RequestParam String username, Principal principal) {
+        return friendshipRepository.findByfriendNameAndUsername(principal.getName(), username);
+    }
+
     @PostMapping(value = "/newDiaryComment")
     public ResponseEntity newDiaryComment(@RequestBody DiaryComment diaryComment) {
         diaryCommentRepository.save(diaryComment);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping(value = "/newFriendship")
+    public ResponseEntity newFriendship(@RequestBody Friendship friendship) {
+        friendshipRepository.save(friendship);
         return ResponseEntity.accepted().build();
     }
 

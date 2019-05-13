@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface DiaryEntryRepository extends JpaRepository<DiaryEntry, Long> {
 
-    @Query("SELECT d FROM DiaryEntry d WHERE d.user_name = :currentuser OR d.user_name IN (SELECT f.friendshipId.username FROM Friendship f WHERE d.user_name = f.friendshipId.username AND f.request_status = \'approved\' AND f.friendshipId.friendName = :currentuser) ")
+    @Query("SELECT d FROM DiaryEntry d WHERE d.user_name = :currentuser OR d.user_name IN (SELECT f.username FROM Friendship f WHERE d.user_name = f.username AND f.request_status = \'approved\' AND f.friendName = :currentuser) ")
     List<DiaryEntry> getAllDiaryEntries(@Param("currentuser") String currentuser);
 
 }

@@ -1,14 +1,18 @@
 import React, {Component} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import axios from 'axios';
+import Button from '@material-ui/core/Button';
 
 
 var apiBaseUrl = "http://localhost:8080/";
 var profileScreen = [];
+var friendshipScreen = [];
 
 class Profile extends Component {
     constructor(props) {
         super(props);
+        var location = window.location.href;
+        var pageUser = location.substr(location.indexOf("-") + 1);
         var username = "";
         var first_name = "";
         var last_name = "";
@@ -24,24 +28,57 @@ class Profile extends Component {
             dob: dob,
             city: city,
             country: country,
-            profileScreen: profileScreen
+            profileScreen: profileScreen,
+            friendshipScreen: friendshipScreen,
+            pageUser: pageUser
         };
         this.retrieveUserInfo();
+        this.setFriendships();
     }
 
+    async setFriendships() {
+        await this.getName();
+        if (this.state.currentUser !== this.state.pageUser) {
+            await axios.get(apiBaseUrl + 'getFriendship?username=' + this.state.pageUser)
+                .then(res => {
+                    if (res.data === null || res.data === "") {
+                        console.log("got it");
+                        this.setState({status: "nothing"});
+                        friendshipScreen.push([<Button variant="contained" color="primary"
+                                                       onClick={(e) => {
+                                                           this.friendRequestClick()
+                                                       }}>Send Friend Request</Button>]);
+                        this.setState({friendshipScreen: friendshipScreen});
+                    }
+                });
+        } else {
+            this.setState({status: "false"});
+        }
+    }
 
-    render() {
-        return (
-            <div>
-                {this.state.profileScreen}
-            </div>
-        );
+    friendRequestClick(event) {
+        axios.post(apiBaseUrl + 'newFriendship', {
+            friendName: this.state.pageUser,
+            username: this.state.currentUser,
+            request_status: "pending",
+            time_stamp: new Date(),
+            visibility: "friends"
+        }).then(function (response) {
+            console.log(response);
+            if (response.status === 200 || response.status === 202) {
+                console.log(response.status);
+            } else {
+                alert("An error occurred");
+                console.log("some error ocurred", response.status);
+            }
+        })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     retrieveUserInfo() {
-        var location = window.location.href;
-        var username = location.substr(location.indexOf("-") + 1);
-        axios.get(apiBaseUrl + 'getUser?username=' + username)
+        axios.get(apiBaseUrl + 'getUser?username=' + this.state.pageUser)
             .then(res => {
                 this.setState({
                     username: res.data["username"],
@@ -53,7 +90,7 @@ class Profile extends Component {
                     country: res.data["country"]
                 });
                 profileScreen.push(this.getProfile());
-                this.setState({profileScreen:profileScreen});
+                this.setState({profileScreen: profileScreen});
                 this.render();
             });
     }
@@ -84,6 +121,28 @@ class Profile extends Component {
                 <p>
                     Country: {this.state.country}
                 </p>
+            </div>
+        );
+    }
+
+    async getName() {
+        await axios.get(apiBaseUrl + 'username')
+            .then((res) => {
+                this.setState({
+                    currentUser: res.data
+                });
+            });
+    }
+
+    render() {
+        return (
+            <div>
+                <div>
+                    {this.state.profileScreen}
+                </div>
+                <div>
+                    {this.state.friendshipScreen}
+                </div>
             </div>
         );
     }

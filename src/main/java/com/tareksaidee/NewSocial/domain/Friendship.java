@@ -11,11 +11,15 @@ import java.util.Objects;
 @Data
 @Entity
 @Table(name = "friendships")
+@IdClass(FriendshipId.class)
 public class Friendship {
 
-    @EmbeddedId
-    private FriendshipId friendshipId;
-
+    @Id
+    @Column(name = "friend_name", nullable = false)
+    private String friendName;
+    @Id
+    @Column(name = "user_name", nullable = false)
+    private String username;
     private String request_status;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -23,8 +27,25 @@ public class Friendship {
 
     private String visibility;
 
-    public FriendshipId getFriendshipId() {
-        return friendshipId;
+
+    public Friendship() {
+    }
+
+
+    public Friendship(String friendName, String username, String request_status, Date time_stamp, String visibility) {
+        this.friendName = friendName;
+        this.username = username;
+        this.request_status = request_status;
+        this.time_stamp = time_stamp;
+        this.visibility = visibility;
+    }
+
+    public String getFriendName() {
+        return friendName;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getRequest_status() {
@@ -37,46 +58,5 @@ public class Friendship {
 
     public String getVisibility() {
         return visibility;
-    }
-
-    public Friendship() {
-    }
-
-    @Embeddable
-    private class FriendshipId implements Serializable {
-        @Column(name = "friend_name", nullable = false)
-        private String friendName;
-        @Column(name = "user_name", nullable = false)
-        private String username;
-
-        public FriendshipId(String friendName, String username) {
-            this.friendName = friendName;
-            this.username = username;
-        }
-
-        public FriendshipId() {
-        }
-
-        public String getFriendName() {
-            return friendName;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof FriendshipId)) return false;
-            FriendshipId that = (FriendshipId) o;
-            return Objects.equals(getFriendName(), that.getFriendName()) &&
-                    Objects.equals(getUsername(), that.getUsername());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(getFriendName(), getUsername());
-        }
     }
 }
