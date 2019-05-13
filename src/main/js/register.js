@@ -1,16 +1,35 @@
 import React, {Component} from 'react';
-import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+import {MuiThemeProvider, createMuiTheme, withStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import Typography from '@material-ui/core/Typography';
+import Toolbar from '@material-ui/core/Toolbar';
+import PropTypes from 'prop-types';
 
+
+const styles = {
+    root: {
+        flexGrow: 1,
+    },
+    grow: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    }
+};
 
 class Register extends Component {
     constructor(props) {
         super(props);
+        const {classes} = this.props;
         var registerScreen = [];
         var startDate = new Date();
         const style = {
@@ -20,9 +39,19 @@ class Register extends Component {
         registerScreen.push(<div>
             <MuiThemeProvider theme={theme}>
                 <div>
-                    <AppBar
-                        title="Register"
-                    />
+                    <div className={classes.root}>
+                        <AppBar position="static">
+                            <Toolbar>
+                                <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                                    <MenuIcon/>
+                                </IconButton>
+                                <Typography variant="h6" color="inherit" className={classes.grow}>
+                                    Registration
+                                </Typography>
+                                <Button color="inherit">Login</Button>
+                            </Toolbar>
+                        </AppBar>
+                    </div>
                     <form onSubmit={(event) => this.handleClick(event)}>
                         <TextField
                             name="username"
@@ -123,5 +152,8 @@ class Register extends Component {
     }
 }
 
+Register.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
 
-export default Register;
+export default withStyles(styles)(Register);

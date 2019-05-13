@@ -22,6 +22,9 @@ import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import * as blobUtil from 'blob-util'
+import MenuIcon from '@material-ui/icons/Menu';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const apiBaseUrl = "http://localhost:8080/";
 
@@ -68,6 +71,16 @@ const styles = theme => ({
     },
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
+    },
+    root: {
+        flexGrow: 1,
+    },
+    grow: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
     }
 });
 
@@ -76,9 +89,22 @@ class DiaryEntry extends React.Component {
 
     constructor(props) {
         super(props);
+        const {classes} = this.props;
         var diariesScreen = [];
         var commentsScreen = [];
-        var newEntryScreen = [];
+        var newEntryScreen = [<div className={classes.root}>
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                        <MenuIcon/>
+                    </IconButton>
+                    <Typography variant="h6" color="inherit" className={classes.grow}>
+                        Home Feed
+                    </Typography>
+                    <Button color="inherit">My Profile</Button>
+                </Toolbar>
+            </AppBar>
+        </div>];
         this.state = {
             diariesScreen: diariesScreen,
             commentsScreen: commentsScreen,
@@ -401,9 +427,4 @@ DiaryEntry
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)
-
-(
-    DiaryEntry
-)
-;
+export default withStyles(styles)(DiaryEntry);
