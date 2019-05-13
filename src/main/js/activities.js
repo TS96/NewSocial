@@ -4,12 +4,10 @@ import {withStyles} from '@material-ui/core/styles';
 import classnames from 'classnames';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
@@ -22,9 +20,25 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import * as blobUtil from 'blob-util'
+import GoogleMapReact from 'google-map-react';
+
 
 const apiBaseUrl = "http://localhost:8080/";
+const AnyReactComponent = ({text}) => (
+    <div style={{
+        color: 'white',
+        background: 'grey',
+        padding: '15px 10px',
+        display: 'inline-flex',
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '100%',
+        transform: 'translate(-50%, -50%)'
+    }}>
+        {text}
+    </div>
+);
 
 const styles = theme => ({
     card: {
@@ -69,61 +83,65 @@ const styles = theme => ({
     },
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
-    }
+    },
+    center: {
+        lat: 40.68,
+        lng: -73.98
+    },
+    zoom: 11
 });
 
 
-class DiaryEntry extends React.Component {
+class Activity extends React.Component {
+
+    static defaultProps = {
+        center: {
+            lat: 40.66,
+            lng: -73.98
+        },
+        zoom: 11
+    };
 
     constructor(props) {
         super(props);
-        var diariesScreen = [];
-        var commentsScreen = [];
-        var newEntryScreen = [];
+        var activitiesScreen = [];
+        var newActivityScreen = [];
         this.state = {
-            diariesScreen: diariesScreen,
-            commentsScreen: commentsScreen,
+            activitiesScreen: activitiesScreen,
             user_name: "",
-            newEntryScreen: newEntryScreen
+            newActivityScreen: newActivityScreen
         };
-        this.getEntries();
+        this.getActivities();
     }
 
     componentDidMount() {
-        this.setNewEntryScreen();
+        this.setNewActivityScreen();
     }
 
-    getEntries() {
+    getActivities() {
         const {classes} = this.props;
-        var body = "";
-        var media = "";
         var time_stamp = "";
         var title = "";
         var user_name = "";
         var visibility = "";
         var loc_id = "";
-        var entryId = "";
+        var activityId = "";
         this.getName();
-        axios.get(apiBaseUrl + 'getAllDiaryEntries')
+        axios.get(apiBaseUrl + 'getAllActivities')
             .then(async (res) => {
                 for (var i = 0; i < res.data.length; i++) {
-                    body = res.data[i]["body"];
-                    media = res.data[i]["media"];
-                    if (media === null) {
-                        // media = new File([media], "mediaFile" + i);
-                        // media = URL.createObjectURL(media);
-                        media = "./asd.jpg"
-                    }
                     time_stamp = res.data[i]["time_stamp"];
                     title = res.data[i]["title"];
                     user_name = res.data[i]["user_name"];
                     visibility = res.data[i]["visibility"];
                     loc_id = res.data[i]["loc_id"];
-                    entryId = res.data[i]["entryId"];
-                    await this.getComments(entryId);
-                    await this.getLikes(entryId);
+                    activityId = res.data[i]["activityID"];
+                    await this.getLikes(activityId);
+                    await this.getLocation(loc_id);
+                    console.log(this.state.activityLat);
+                    console.log(this.state.activityLong);
                     this.setState({
-                        diariesScreen: this.state.diariesScreen.concat([<div><Card className={classes.card}>
+                        activitiesScreen: this.state.activitiesScreen.concat([<div><Card className={classes.card}>
                             <CardHeader
                                 avatar={
                                     <Avatar aria-label="Recipe" className={classes.avatar}>
@@ -138,37 +156,30 @@ class DiaryEntry extends React.Component {
                                 title={title}
                                 subheader={time_stamp}
                             />
-                            <CardMedia
-                                className={classes.media}
-                                image={media}
-                                title="Paella dish"
-                            />
+                            <div style={{height: '50vh', width: '100%'}}>
+                                <GoogleMapReact
+                                    bootstrapURLKeys={{key: "AIzaSyAQeHqAYX1RxO46PksnMDtvMa2Y4Ivbqgs"}}
+                                    defaultCenter={this.props.center}
+                                    defaultZoom={this.props.zoom}
+                                >
+                                    <AnyReactComponent
+                                        lat={this.state.activityLat}
+                                        lng={this.state.activityLong}
+                                        text={this.state.activityName}
+                                    />
+                                </GoogleMapReact>
+                            </div>
                             <CardContent>
-                                <Typography component="p">
-                                    {body}
-                                </Typography>
                             </CardContent>
                             <CardActions className={classes.actions} disableActionSpacing>
-                                <IconButton aria-label="Add to favorites" onClick={this.diaryLike(entryId)}>
+                                <IconButton aria-label="Add to favorites" onClick={this.activityLike(activityId)}>
                                     <FavoriteIcon/>
-                                    <p>{this.state.entryLikes}</p>
+                                    <p>{this.state.activityLikes}</p>
                                 </IconButton>
                                 <IconButton aria-label="Share">
                                     <ShareIcon/>
                                 </IconButton>
                             </CardActions>
-                            {this.state.commentsScreen}
-                            <TextField
-                                // id="outlined-name"
-                                label="New Comment"
-                                className={classes.textField}
-                                value={this.state[entryId]}
-                                onChange={this.handleChange(entryId)}
-                                margin="normal"
-                                variant="outlined"
-                            />
-                            <Button variant="contained" color="primary"
-                                    onClick={this.commentClick(entryId)}>Add</Button>
                         </Card><br/></div>])
                     });
                 }
@@ -183,7 +194,7 @@ class DiaryEntry extends React.Component {
         console.log(this.state[name]);
     };
 
-    diaryLike = (entry_id) => (e) => {
+    activityLike = (entry_id) => (e) => {
         axios.post(apiBaseUrl + 'newDiaryLike', {
             entry_id: entry_id,
             user_name: this.state.user_name,
@@ -201,14 +212,50 @@ class DiaryEntry extends React.Component {
             });
     };
 
-    commentClick = (entry_id) => (e) => {
-        var body = this.state[entry_id];
-        console.log(body);
-        axios.post(apiBaseUrl + 'newDiaryComment', {
-            entry_id: entry_id,
+    getName() {
+        axios.get(apiBaseUrl + 'username')
+            .then(res => {
+                this.setState({
+                    user_name: res.data
+                });
+            });
+    }
+
+    async getLikes(diaryID) {
+        await axios.get(apiBaseUrl + 'getDiaryLikes?entryID=' + diaryID).then(res => {
+            if (res.data)
+                this.setState({
+                    activityLikes: res.data
+                });
+            else
+                this.setState({
+                    activityLikes: 0
+                });
+        });
+        console.log("done");
+    };
+
+    async getLocation(loc_id) {
+        await axios.get(apiBaseUrl + 'getLocation?locationID=' + loc_id).then(res => {
+            if (res.data)
+                this.setState({
+                    activityLong: parseFloat(res.data["lon"]),
+                    activityLat: parseFloat(res.data["lat"]),
+                    activityName: res.data["name"]
+                });
+        });
+        console.log("done");
+    };
+
+    newPostClick = (e) => {
+        console.log(this.state.selectedFile);
+        axios.post(apiBaseUrl + 'newDiaryEntry', {
             user_name: this.state.user_name,
+            title: this.state.newTitle,
             time_stamp: Date.now(),
-            body: body
+            body: this.state.newBody,
+            visibility: this.state.visibility,
+            media: this.state.selectedFile
         })
             .then(function (response) {
                 console.log(response);
@@ -224,93 +271,11 @@ class DiaryEntry extends React.Component {
             });
     };
 
-    getName() {
-        axios.get(apiBaseUrl + 'username')
-            .then(res => {
-                this.setState({
-                    user_name: res.data
-                });
-            });
-    }
-
-    async getComments(diaryID) {
-        await axios.get(apiBaseUrl + 'getDiaryComments?entryID=' + diaryID).then(res => {
-            var comments = [];
-            var commentBody;
-            var commentTimestamp;
-            var commentUsername;
-            for (var i = 0; i < res.data.length; i++) {
-                commentBody = res.data[i]["body"];
-                commentTimestamp = res.data[i]["time_stamp"];
-                commentUsername = res.data[i]["user_name"];
-                comments.push(<div>
-                    {commentUsername}: {commentBody}<br/>
-                </div>)
-            }
-            this.setState({
-                commentsScreen: comments
-            });
-        });
-    };
-
-    async getLikes(diaryID) {
-        await axios.get(apiBaseUrl + 'getDiaryLikes?entryID=' + diaryID).then(res => {
-            if (res.data)
-                this.setState({
-                    entryLikes: res.data
-                });
-            else
-                this.setState({
-                    entryLikes: 0
-                });
-        });
-        console.log("done");
-    };
-
-    newPostClick = (e) => {
-        console.log(this.state.selectedFile);
-        let config = {
-            header: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        var data = new FormData();
-        data.append('user_name', this.state.user_name);
-        data.append('title', this.state.newTitle);
-        data.append('time_stamp', Date.now());
-        data.append('body', this.state.newBody);
-        data.append('visibility', this.state.visibility);
-        data.append('media', this.state.selectedFile);
-        data.append('file', 'image');
-        axios.post(apiBaseUrl + 'newDiaryEntry', data, config
-        )
-        // axios.post(apiBaseUrl + 'newDiaryEntry', {
-        //     user_name: this.state.user_name,
-        //     title: this.state.newTitle,
-        //     time_stamp: Date.now(),
-        //     body: this.state.newBody,
-        //     visibility: this.state.visibility,
-        //     media: this.state.selectedFile
-        // })
-            .then(function (response) {
-                console.log(response);
-                if (response.status === 200 || response.status === 202) {
-                    console.log(response.status);
-                } else {
-                    alert("An error occurred");
-                    console.log("some error ocurred", response.status);
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    };
-
-    setNewEntryScreen() {
+    setNewActivityScreen() {
         const {classes} = this.props;
         this.setState({
-            newEntryScreen:
-                this.state.newEntryScreen.concat([<div>
+            newActivityScreen:
+                this.state.newActivityScreen.concat([<div>
                     <TextField
                         // id="outlined-name"
                         label="Title"
@@ -347,20 +312,6 @@ class DiaryEntry extends React.Component {
                         </Select>
                     </FormControl>
                     <br/>
-                    <input
-                        accept="image/*"
-                        className={classes.input}
-                        id="contained-button-file"
-                        type="file"
-                        onChange={(e) => {
-                            this.fileChangedHandler(e)
-                        }}
-                    />
-                    <label htmlFor="contained-button-file">
-                        <Button variant="contained" component="span" className={classes.button}>
-                            Upload
-                        </Button>
-                    </label>
                     <Button variant="contained" color="primary"
                             onClick={() => {
                                 this.newPostClick()
@@ -369,36 +320,22 @@ class DiaryEntry extends React.Component {
         });
     }
 
-    fileChangedHandler = (mainEvent) => {
-        console.log("called");
-        var reader = new FileReader();
-        reader.onload = (event) => {
-            blobUtil.imgSrcToBlob(event.target.result).then((blob) => {
-                    this.setState({selectedFile: blob});
-                }
-            ).catch(function (err) {
-                console.log("Failed to load image" + err);
-            });
-        };
-        reader.readAsDataURL(mainEvent.target.files[0]);
-    };
-
 
     render() {
         return (
             <div>
                 <div>
-                    {this.state.newEntryScreen}
+                    {this.state.newActivityScreen}
                 </div>
                 <div>
-                    {this.state.diariesScreen}
+                    {this.state.activitiesScreen}
                 </div>
             </div>
         );
     }
 }
 
-DiaryEntry
+Activity
     .propTypes = {
     classes: PropTypes.object.isRequired,
 };
@@ -406,6 +343,6 @@ DiaryEntry
 export default withStyles(styles)
 
 (
-    DiaryEntry
+    Activity
 )
 ;

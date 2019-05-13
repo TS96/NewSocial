@@ -33,8 +33,8 @@ public class DiaryLike {
         @Column(name = "user_name", nullable = false)
         private String username;
 
-        public LikeId(Integer friendName, String username) {
-            this.entryId = friendName;
+        public LikeId(Integer entryId, String username) {
+            this.entryId = entryId;
             this.username = username;
         }
 

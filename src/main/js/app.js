@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import Register from "./register";
 import Profile from "./profile";
 import DiaryEntry from "./feed";
+import Activity from "./activities";
 
 class App extends Component {
     constructor(props) {
@@ -12,22 +13,29 @@ class App extends Component {
         var registerPage = [];
         var profilePage = [];
         var homePage = [];
+        var activitiesPage = [];
         var isProfilePage = false;
         var isHomePage = false;
+        var isActivitiesPage = false;
         console.log(window.location.href);
         registerPage.push(<Register appContext={this}/>);
         profilePage.push(<Profile appContext={this}/>);
         homePage.push(<DiaryEntry appContext={this}/>);
+        activitiesPage.push(<Activity appContext={this}/>);
         if (window.location.href.includes("user-"))
             isProfilePage = true;
         if (window.location.href.endsWith("/home"))
             isHomePage = true;
+        if (window.location.href.endsWith("/activities"))
+            isActivitiesPage = true;
         this.state = {
             registerPage: registerPage,
             profilePage: profilePage,
             isProfilePage: isProfilePage,
             homePage: homePage,
             isHomePage: isHomePage,
+            isActivitiesPage: isActivitiesPage,
+            activitiesPage: activitiesPage
         }
     }
 
@@ -45,6 +53,10 @@ class App extends Component {
                     {this.state.homePage}
                 </div>
             );
+        else if (this.state.isActivitiesPage)
+            return (<div style={style}>
+                {this.state.activitiesPage}
+            </div>);
         else
             return (
                 <div style={style}>

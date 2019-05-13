@@ -1,11 +1,7 @@
 package com.tareksaidee.NewSocial.controllers;
 
-import com.tareksaidee.NewSocial.domain.DiaryComment;
-import com.tareksaidee.NewSocial.domain.DiaryEntry;
-import com.tareksaidee.NewSocial.domain.User;
-import com.tareksaidee.NewSocial.repositories.DiaryCommentRepository;
-import com.tareksaidee.NewSocial.repositories.DiaryEntryRepository;
-import com.tareksaidee.NewSocial.repositories.DiaryLikeRepository;
+import com.tareksaidee.NewSocial.domain.*;
+import com.tareksaidee.NewSocial.repositories.*;
 import com.tareksaidee.NewSocial.services.SpringDataJpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +27,13 @@ public class HomeController {
     @Autowired
     DiaryLikeRepository diaryLikeRepository;
 
-    @RequestMapping(value = {"/", "/user-*", "home"})
+    @Autowired
+    LocationRepository locationRepository;
+
+    @Autowired
+    ActivityRepository activityRepository;
+
+    @RequestMapping(value = {"/", "/user-*", "home", "activities"})
     public String index() {
         return "index";
     }
@@ -61,6 +63,12 @@ public class HomeController {
         return diaryEntryRepository.getAllDiaryEntries(principal.getName());
     }
 
+    @RequestMapping(value = "/getAllActivities", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Activity> getAllActivities(Principal principal) {
+        return activityRepository.getAllActivities(principal.getName());
+    }
+
     @RequestMapping(value = "/getDiaryComments", method = RequestMethod.GET)
     @ResponseBody
     public List<DiaryComment> getDiaryComments(@RequestParam String entryID) {
@@ -73,6 +81,12 @@ public class HomeController {
         return diaryLikeRepository.getDiaryLikes(Integer.parseInt(entryID));
     }
 
+    @RequestMapping(value = "/getLocation", method = RequestMethod.GET)
+    @ResponseBody
+    public Location getLocation(@RequestParam String locationID) {
+        return locationRepository.findBylocationID(Integer.parseInt(locationID));
+    }
+
     @PostMapping(value = "/newDiaryComment")
     public ResponseEntity newDiaryComment(@RequestBody DiaryComment diaryComment) {
         diaryCommentRepository.save(diaryComment);
@@ -83,6 +97,12 @@ public class HomeController {
     public ResponseEntity newDiaryEntry(@ModelAttribute DiaryEntry diaryEntry) {
         System.out.println(diaryEntry);
         diaryEntryRepository.save(diaryEntry);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping(value = "/newDiaryLike")
+    public ResponseEntity newDiaryEntry(@RequestBody DiaryLike diaryLike) {
+        diaryLikeRepository.save(diaryLike);
         return ResponseEntity.accepted().build();
     }
 
