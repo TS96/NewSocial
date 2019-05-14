@@ -292,30 +292,14 @@ class DiaryEntry extends React.Component {
     };
 
     newPostClick = (e) => {
-        console.log(this.state.selectedFile);
-        let config = {
-            header: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        var data = new FormData();
-        data.append('user_name', this.state.user_name);
-        data.append('title', this.state.newTitle);
-        data.append('time_stamp', Date.now());
-        data.append('body', this.state.newBody);
-        data.append('visibility', this.state.visibility);
-        data.append('media', this.state.selectedFile);
-        data.append('file', 'image');
-        axios.post(apiBaseUrl + 'newDiaryEntry', data, config
-        )
-        // axios.post(apiBaseUrl + 'newDiaryEntry', {
-        //     user_name: this.state.user_name,
-        //     title: this.state.newTitle,
-        //     time_stamp: Date.now(),
-        //     body: this.state.newBody,
-        //     visibility: this.state.visibility,
-        //     media: this.state.selectedFile
-        // })
+        axios.post(apiBaseUrl + 'newDiaryEntry', {
+            user_name: this.state.user_name,
+            title: this.state.newTitle,
+            time_stamp: Date.now(),
+            body: this.state.newBody,
+            visibility: this.state.visibility,
+            media: this.state.selectedFile
+        })
             .then(function (response) {
                 console.log(response);
                 if (response.status === 200 || response.status === 202) {
@@ -398,7 +382,9 @@ class DiaryEntry extends React.Component {
         var reader = new FileReader();
         reader.onload = (event) => {
             blobUtil.imgSrcToBlob(event.target.result).then((blob) => {
-                    this.setState({selectedFile: blob});
+                    blobUtil.blobToBase64String(blob).then((base64String) => {
+                        this.setState({selectedFile: base64String});
+                    });
                 }
             ).catch(function (err) {
                 console.log("Failed to load image" + err);

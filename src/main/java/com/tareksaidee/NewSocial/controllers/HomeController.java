@@ -124,7 +124,7 @@ public class HomeController {
     }
 
     @PostMapping(value = "/newDiaryEntry")
-    public ResponseEntity newDiaryEntry(@ModelAttribute DiaryEntry diaryEntry) {
+    public ResponseEntity newDiaryEntry(@RequestBody DiaryEntry diaryEntry) {
         System.out.println(diaryEntry);
         diaryEntryRepository.save(diaryEntry);
         return ResponseEntity.accepted().build();
@@ -151,6 +151,12 @@ public class HomeController {
     @PostMapping(value = "/newLocation")
     public ResponseEntity newLocation(@RequestBody Location location) {
         locationRepository.save(location);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping(value = "/updateUser")
+    public ResponseEntity updateUser(@RequestBody User user) {
+        springDataJpaUserDetailsService.getRepository().save(user);
         return ResponseEntity.accepted().build();
     }
 

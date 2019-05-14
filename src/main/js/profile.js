@@ -9,6 +9,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 
 
 var apiBaseUrl = "http://localhost:8080/";
@@ -25,6 +26,19 @@ const styles = {
     menuButton: {
         marginLeft: -12,
         marginRight: 20,
+    }, container: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    textField: {
+        marginLeft: 5,
+        marginRight: 5,
+    },
+    dense: {
+        marginTop: 16,
+    },
+    menu: {
+        width: 200,
     }
 };
 
@@ -81,7 +95,7 @@ class Profile extends Component {
                     this.setState({friendshipScreen: friendshipScreen});
                 });
         } else {
-            this.setState({status: "false"});
+            this.setState({status: "true"});
         }
     }
 
@@ -124,6 +138,14 @@ class Profile extends Component {
             });
     }
 
+    handleChange = name => event => {
+        console.log(name);
+        this.setState({
+            [name]: event.target.value,
+        });
+        console.log(this.state[name]);
+    };
+
     getProfile() {
         const {classes} = this.props;
         return (
@@ -143,29 +165,101 @@ class Profile extends Component {
                 </div>
                 <Avatar>H</Avatar>
                 <br/>
-                <p>
-                    Username: {this.state.username}
-                </p>
-                <p>
-                    Email: {this.state.email}
-                </p>
-                <p>
-                    First Name: {this.state.first_name}
-                </p>
-                <p>
-                    Last Name: {this.state.last_name}
-                </p>
-                <p>
-                    Date of Birth: {this.state.dob}
-                </p>
-                <p>
-                    City: {this.state.city}
-                </p>
-                <p>
-                    Country: {this.state.country}
-                </p>
+                <TextField
+                    id="outlined-name"
+                    label="Username"
+                    className={classes.textField}
+                    value={this.state.username}
+                    onChange={this.handleChange('username')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    id="outlined-name"
+                    label="Email"
+                    className={classes.textField}
+                    value={this.state.email}
+                    onChange={this.handleChange('email')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    id="outlined-name"
+                    label="First Name"
+                    className={classes.textField}
+                    value={this.state.first_name}
+                    onChange={this.handleChange('first_name')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    id="outlined-name"
+                    label="Last Name"
+                    className={classes.textField}
+                    value={this.state.last_name}
+                    onChange={this.handleChange('last_name')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    id="outlined-name"
+                    label="Date of Birth"
+                    className={classes.textField}
+                    value={this.state.dob}
+                    onChange={this.handleChange('dob')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    id="outlined-name"
+                    label="City"
+                    className={classes.textField}
+                    value={this.state.city}
+                    onChange={this.handleChange('city')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    id="outlined-name"
+                    label="Country"
+                    className={classes.textField}
+                    value={this.state.country}
+                    onChange={this.handleChange('country')}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <Button variant="contained" color="primary"
+                        onClick={(event) => this.handleClick(event)}>Save</Button>
             </div>
         );
+    }
+
+    handleClick(event) {
+        if (this.state.status === "true") {
+            alert("You're not the user!");
+        }
+        event.preventDefault();
+        var apiBaseUrl = "http://localhost:8080/";
+        axios.post(apiBaseUrl + 'updateUser', {
+            username: this.state.username,
+            email: this.state.email,
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            dob: this.state.dob,
+            city: this.state.city,
+            country: this.state.country
+        }).then(function (response) {
+            console.log(response);
+            if (response.status === 200 || response.status === 202) {
+                console.log(response.status);
+            } else {
+                alert("An error occurred");
+                console.log("some error ocurred", response.status);
+            }
+        })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     async getName() {
