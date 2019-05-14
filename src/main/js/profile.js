@@ -47,37 +47,24 @@ class Profile extends Component {
         super(props);
         var location = window.location.href;
         var pageUser = location.substr(location.indexOf("-") + 1);
-        var username = "";
-        var first_name = "";
-        var last_name = "";
-        var email = "";
-        var dob = "";
-        var city = "";
-        var country = "";
         this.state = {
-            username: username,
-            first_name: first_name,
-            last_name: last_name,
-            email: email,
-            dob: dob,
-            city: city,
-            country: country,
             profileScreen: profileScreen,
             friendshipScreen: friendshipScreen,
             pageUser: pageUser
         };
+        this.setState({profileScreen: this.getProfile()});
         this.retrieveUserInfo();
         this.setFriendships();
     }
 
     async setFriendships() {
         await this.getName();
+        this.setState({isTheSame: false});
         if (this.state.currentUser !== this.state.pageUser) {
             await axios.get(apiBaseUrl + 'getFriendship?username=' + this.state.pageUser)
                 .then(res => {
                     console.log(res);
                     if (res.data === null || res.data === "") {
-                        this.setState({status: "nothing"});
                         friendshipScreen.push([<Button variant="contained" color="primary"
                                                        onClick={(e) => {
                                                            this.friendRequestClick()
@@ -95,7 +82,7 @@ class Profile extends Component {
                     this.setState({friendshipScreen: friendshipScreen});
                 });
         } else {
-            this.setState({status: "true"});
+            this.setState({isTheSame: true});
         }
     }
 
@@ -132,8 +119,7 @@ class Profile extends Component {
                     city: res.data["city"],
                     country: res.data["country"]
                 });
-                profileScreen.push(this.getProfile());
-                this.setState({profileScreen: profileScreen});
+                this.setState({profileScreen: this.getProfile()});
                 this.render();
             });
     }
@@ -235,8 +221,9 @@ class Profile extends Component {
     }
 
     handleClick(event) {
-        if (this.state.status === "true") {
+        if (this.state.isTheSame === false) {
             alert("You're not the user!");
+            return;
         }
         event.preventDefault();
         var apiBaseUrl = "http://localhost:8080/";
