@@ -20,7 +20,6 @@ public class Location {
     private Integer locationID;
     private String name;
     private String lat;
-    @Column(name = "long")
     private String lon;
 
     public Location() {

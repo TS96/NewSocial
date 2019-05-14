@@ -220,10 +220,10 @@ class Activity extends React.Component {
         console.log(this.state[name]);
     };
 
-    activityLike = (entry_id) => (e) => {
-        axios.post(apiBaseUrl + 'newDiaryLike', {
-            entry_id: entry_id,
-            user_name: this.state.user_name,
+    activityLike = (activityId) => (e) => {
+        axios.post(apiBaseUrl + 'newActivityLike', {
+            acID: activityId,
+            username: this.state.user_name,
         }).then(function (response) {
             console.log(response);
             if (response.status === 200 || response.status === 202) {
@@ -247,8 +247,8 @@ class Activity extends React.Component {
             });
     }
 
-    async getLikes(diaryID) {
-        await axios.get(apiBaseUrl + 'getDiaryLikes?entryID=' + diaryID).then(res => {
+    async getLikes(activityId) {
+        await axios.get(apiBaseUrl + 'getActivityLikes?acID=' + activityId).then(res => {
             if (res.data)
                 this.setState({
                     activityLikes: res.data
@@ -258,7 +258,6 @@ class Activity extends React.Component {
                     activityLikes: 0
                 });
         });
-        console.log("done");
     };
 
     async getLocation(loc_id) {
@@ -274,24 +273,30 @@ class Activity extends React.Component {
     };
 
     newPostClick = (e) => {
-        console.log(this.state.selectedFile);
-        axios.post(apiBaseUrl + 'newDiaryEntry', {
-            user_name: this.state.user_name,
-            title: this.state.newTitle,
-            time_stamp: Date.now(),
-            body: this.state.newBody,
-            visibility: this.state.visibility,
-            media: this.state.selectedFile
+        axios.post(apiBaseUrl + 'newLocation', {
+            name: this.state.newLocation,
+            lat: this.state.newLatitude,
+            lon: this.state.newLongitude,
+        }).then(async (response) => {
+            console.log(response);
+            if (response.status === 200 || response.status === 202) {
+                await axios.get(apiBaseUrl + 'getLocationByName?name=' + this.state.newLocation)
+                    .then(async (res) => {
+                        console.log(res);
+                        this.setState({newLocationID: res.data["locationID"]});
+                        await axios.post(apiBaseUrl + 'newActivity', {
+                            user_name: this.state.user_name,
+                            title: this.state.newTitle,
+                            time_stamp: Date.now(),
+                            loc_id: parseInt(this.state.newLocationID),
+                            visibility: this.state.visibility,
+                        });
+                    });
+            } else {
+                alert("An error occurred");
+                console.log("some error ocurred", response.status);
+            }
         })
-            .then(function (response) {
-                console.log(response);
-                if (response.status === 200 || response.status === 202) {
-                    console.log(response.status);
-                } else {
-                    alert("An error occurred");
-                    console.log("some error ocurred", response.status);
-                }
-            })
             .catch(function (error) {
                 console.log(error);
             });
@@ -314,10 +319,28 @@ class Activity extends React.Component {
                     <br/>
                     <TextField
                         // id="outlined-name"
-                        label="Body"
+                        label="Location Name"
                         className={classes.textField}
-                        value={this.state.newBody}
-                        onChange={this.handleChange("newBody")}
+                        value={this.state.newLocation}
+                        onChange={this.handleChange("newLocation")}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <TextField
+                        // id="outlined-name"
+                        label="Latitude"
+                        className={classes.textField}
+                        value={this.state.newLatitude}
+                        onChange={this.handleChange("newLatitude")}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <TextField
+                        // id="outlined-name"
+                        label="Longitude"
+                        className={classes.textField}
+                        value={this.state.newLongitude}
+                        onChange={this.handleChange("newLongitude")}
                         margin="normal"
                         variant="outlined"
                     />

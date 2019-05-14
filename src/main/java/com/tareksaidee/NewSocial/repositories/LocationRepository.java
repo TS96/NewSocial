@@ -8,4 +8,6 @@ public interface LocationRepository extends PagingAndSortingRepository<Location,
 
     Location findBylocationID(Integer locationID);
 
+    Location findLocationByName(String name);
+
 }

@@ -28,6 +28,9 @@ public class HomeController {
     DiaryLikeRepository diaryLikeRepository;
 
     @Autowired
+    ActivityLikeRepository activityLikeRepository;
+
+    @Autowired
     LocationRepository locationRepository;
 
     @Autowired
@@ -84,10 +87,22 @@ public class HomeController {
         return diaryLikeRepository.getDiaryLikes(Integer.parseInt(entryID));
     }
 
+    @RequestMapping(value = "/getActivityLikes", method = RequestMethod.GET)
+    @ResponseBody
+    public Long getActivityLikes(@RequestParam String acID) {
+        return activityLikeRepository.getActivityLikes(Integer.parseInt(acID));
+    }
+
     @RequestMapping(value = "/getLocation", method = RequestMethod.GET)
     @ResponseBody
     public Location getLocation(@RequestParam String locationID) {
         return locationRepository.findBylocationID(Integer.parseInt(locationID));
+    }
+
+    @RequestMapping(value = "/getLocationByName", method = RequestMethod.GET)
+    @ResponseBody
+    public Location getLocationByName(@RequestParam String name) {
+        return locationRepository.findLocationByName(name);
     }
 
     @RequestMapping(value = "/getFriendship", method = RequestMethod.GET)
@@ -115,9 +130,27 @@ public class HomeController {
         return ResponseEntity.accepted().build();
     }
 
+    @PostMapping(value = "/newActivity")
+    public ResponseEntity newActivity(@RequestBody Activity activity) {
+        activityRepository.save(activity);
+        return ResponseEntity.accepted().build();
+    }
+
     @PostMapping(value = "/newDiaryLike")
-    public ResponseEntity newDiaryEntry(@RequestBody DiaryLike diaryLike) {
+    public ResponseEntity newDiaryLike(@RequestBody DiaryLike diaryLike) {
         diaryLikeRepository.save(diaryLike);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping(value = "/newActivityLike")
+    public ResponseEntity newActivityLike(@RequestBody ActivityLike activityLike) {
+        activityLikeRepository.save(activityLike);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping(value = "/newLocation")
+    public ResponseEntity newLocation(@RequestBody Location location) {
+        locationRepository.save(location);
         return ResponseEntity.accepted().build();
     }
 
