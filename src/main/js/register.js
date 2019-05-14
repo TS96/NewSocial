@@ -23,97 +23,137 @@ const styles = {
     menuButton: {
         marginLeft: -12,
         marginRight: 20,
+    },
+    textField: {
+        marginLeft: 5,
+        marginRight: 5,
+        width: 200,
+    },
+    dense: {
+        marginTop: 19,
+    },
+    menu: {
+        width: 200
     }
 };
 
-class Register extends Component {
+class Register extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            datePick: new Date(),
+            registerScreen: []
+        };
+    }
+
+    componentDidMount() {
         const {classes} = this.props;
-        var registerScreen = [];
-        var startDate = new Date();
         const style = {
             margin: 15,
         };
         const theme = createMuiTheme();
-        registerScreen.push(<div>
-            <MuiThemeProvider theme={theme}>
-                <div>
-                    <div className={classes.root}>
-                        <AppBar position="static">
-                            <Toolbar>
-                                <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-                                    <MenuIcon/>
-                                </IconButton>
-                                <Typography variant="h6" color="inherit" className={classes.grow}>
-                                    Registration
-                                </Typography>
-                                <Button color="inherit">Login</Button>
-                            </Toolbar>
-                        </AppBar>
-                    </div>
-                    <form onSubmit={(event) => this.handleClick(event)}>
-                        <TextField
-                            name="username"
-                            hintText="Enter your Username"
-                            floatingLabelText="Username"
-                        />
-                        <br/>
-                        <TextField
-                            name="first_name"
-                            hintText="Enter your First Name"
-                            floatingLabelText="First Name"
-                        />
-                        <br/>
-                        <TextField
-                            name="last_name"
-                            hintText="Enter your Last Name"
-                            floatingLabelText="Last Name"
-                        />
-                        <br/>
-                        <TextField
-                            name="email"
-                            hintText="Enter your email"
-                            floatingLabelText="Email"
-                        />
-                        <br/>
-                        <TextField
-                            name="city"
-                            hintText="Enter your city"
-                            floatingLabelText="City"
-                        />
-                        <br/>
-                        <TextField
-                            name="country"
-                            hintText="Enter your country"
-                            floatingLabelText="Country"
-                        />
-                        <br/>
-                        <TextField
-                            name="password"
-                            type="password"
-                            hintText="Enter your Password"
-                            floatingLabelText="Password"
-                        />
-                        <br/>
-                        <DatePicker
-                            name="dob"
-                            selected={startDate}
-                            onChange={(date) => startDate = date}
-                        />
-                        <br/>
-                        <Button variant="contained" color="primary" style={style}>Submit</Button>
-                    </form>
-                </div>
-                <div>Already registered? Login!
+        this.setState( {
+            registerScreen: [<div>
+                <MuiThemeProvider theme={theme}>
                     <div>
-                        <Button variant="contained" color="primary" style={style}
-                                onClick={(event) => this.handleLoginClick(event)}>Login</Button>
+                        <div className={classes.root}>
+                            <AppBar position="static">
+                                <Toolbar>
+                                    <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                                        <MenuIcon/>
+                                    </IconButton>
+                                    <Typography variant="h6" color="inherit" className={classes.grow}>
+                                        Registration
+                                    </Typography>
+                                    <Button color="inherit">Login</Button>
+                                </Toolbar>
+                            </AppBar>
+                        </div>
+                            <TextField
+                                // id="outlined-name"
+                                label="username"
+                                className={classes.textField}
+                                value={this.state.username}
+                                onChange={this.handleChange("username")}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                // id="outlined-name"
+                                label="first_name"
+                                className={classes.textField}
+                                value={this.state.first_name}
+                                onChange={this.handleChange("first_name")}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                // id="outlined-name"
+                                label="last_name"
+                                className={classes.textField}
+                                value={this.state.last_name}
+                                onChange={this.handleChange("last_name")}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                // id="outlined-name"
+                                label="email"
+                                className={classes.textField}
+                                value={this.state.email}
+                                onChange={this.handleChange("email")}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                // id="outlined-name"
+                                label="city"
+                                className={classes.textField}
+                                value={this.state.city}
+                                onChange={this.handleChange("city")}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                // id="outlined-name"
+                                label="country"
+                                className={classes.textField}
+                                value={this.state.country}
+                                onChange={this.handleChange("country")}
+                                margin="normal"
+                                variant="outlined"
+                            />
+                            <TextField
+                                // id="outlined-name"
+                                label="password"
+                                className={classes.textField}
+                                value={this.state.password}
+                                onChange={this.handleChange("password")}
+                                margin="normal"
+                                variant="outlined"
+                                type="password"
+                            />
+                            <DatePicker
+                                name="dob"
+                                selected={this.state.datePick}
+                                onChange={(date) => this.setState({datePick: date})}
+                            />
+                            <br/><br/><br/>
+                            <Button variant="contained" color="primary"
+                                    onClick={() => {
+                                        this.handleClick()
+                                    }}>Register</Button>
                     </div>
-                </div>
-            </MuiThemeProvider>
-        </div>);
-        this.state = {registerScreen: registerScreen}
+                    <div>Already registered? Login!
+                        <div>
+                            <Button variant="contained" color="primary" style={style}
+                                    onClick={(event) => this.handleLoginClick(event)}>Login</Button>
+                        </div>
+                    </div>
+                </MuiThemeProvider>
+            </div>]
+        });
+        this.render();
     }
 
 
@@ -121,13 +161,29 @@ class Register extends Component {
         window.location = "/login"
     }
 
+    handleChange = name => event => {
+        console.log(name);
+        this.setState({
+            [name]: event.target.value,
+        });
+        console.log(this.state[name]);
+    };
+
 
     handleClick(event) {
-        event.preventDefault();
         var apiBaseUrl = "http://localhost:8080/";
-        var self = this;
-        const data = new FormData(event.target);
-        axios.post(apiBaseUrl + 'register', data)
+        console.log(this.state.password);
+        axios.post(apiBaseUrl + 'register', {
+            username: this.state.username,
+            email: this.state.email,
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            password: this.state.password,
+            dob: this.state.datePick,
+            city: this.state.city,
+            country: this.state.country,
+
+        })
             .then(function (response) {
                 console.log(response);
                 if (response.status === 200 || response.status === 202) {
@@ -135,7 +191,7 @@ class Register extends Component {
                     window.location = "/login"
                 } else {
                     alert("An error occurred");
-                    console.log("some error ocurred", response.status);
+                    console.log("some error occurred", response.status);
                 }
             })
             .catch(function (error) {

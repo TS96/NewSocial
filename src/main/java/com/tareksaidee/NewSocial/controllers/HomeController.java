@@ -51,7 +51,7 @@ public class HomeController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity register(@ModelAttribute User user) {
+    public ResponseEntity register(@RequestBody User user) {
         System.out.println(user);
         springDataJpaUserDetailsService.getRepository().save(user);
         return ResponseEntity.accepted().build();
@@ -156,6 +156,8 @@ public class HomeController {
 
     @PostMapping(value = "/updateUser")
     public ResponseEntity updateUser(@RequestBody User user) {
+        User olduser = springDataJpaUserDetailsService.getRepository().findByUsername(user.getUsername());
+        user.setPassword(olduser.getPassword());
         springDataJpaUserDetailsService.getRepository().save(user);
         return ResponseEntity.accepted().build();
     }
